@@ -13,4 +13,14 @@ class Dream {
     this.rating);
 
   Dream.withBody(this.dreamBody);
+
+  toJson() {
+    return {
+      "body": this.dreamBody,
+      "name": this.dreamName,
+      "created_at": this.createdAt,
+      "rating": this.rating,
+      "make_public": this.makePublic
+    };
+  }
 }

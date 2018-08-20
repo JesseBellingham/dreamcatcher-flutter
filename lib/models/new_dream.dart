@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dreamcatcher/models/dream.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -71,6 +74,8 @@ class NewDreamFormState extends State<NewDreamForm> {
   // Note: This is a `GlobalKey<FormState>`, not a GlobalKey<MyCustomFormState>! 
   final _formKey = GlobalKey<FormState>();
   var _newDream = new Dream();
+  final Firestore firestore = Firestore.instance;
+  CollectionReference get dreams =>  firestore.collection('dreams');
 
   void onChanged(bool newValue) {
     setState(() {
@@ -78,10 +83,18 @@ class NewDreamFormState extends State<NewDreamForm> {
     });
   }
 
-  void submit() {
+  Future<Null> submit() async {
     if (this._formKey.currentState.validate()) {
       _formKey.currentState.save();
       _myDreams.add(_newDream);
+      
+
+      final DocumentReference document = dreams.document();
+      // document.
+      document.setData(
+        _newDream.toJson()
+      );
+      // firestore.collection('dreams').document(new UniqueKey().toString()).setData(_newDream.toJson());
       _newDream = new Dream();
     }
   }
