@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 final _biggerFont = const TextStyle(fontSize: 18.0);
+final _publicDreams = List<Dream>();
 
 class PublicDreams extends StatefulWidget {
   @override
@@ -24,7 +25,7 @@ class PublicDreamsState extends State<PublicDreams> {
         ],
       ),
       body: new StreamBuilder(
-        stream: Firestore.instance.collection('dreams').snapshots(),
+        stream: Firestore.instance.collection('dreams').where("make_public", isEqualTo: true).snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return Text("Loading dreams...");
           return PublicDreamsList(snapshot);
@@ -58,19 +59,8 @@ class PublicDreamsListState extends State<PublicDreamsList> {
 
   @override
   Widget build(BuildContext context) {
-    List<Dream> publicDreams = new List<Dream>();
-    this.snapshot.data.documents.forEach(
-      (DocumentSnapshot ds) {
-        publicDreams.add(new Dream.withAll(
-          ds["name"],
-          ds["body"],
-          ds["created_at"],
-          ds["make_public"],
-          ds["rating"]
-        ));
-      }
-    );
-    final Iterable<ListTile> tiles = publicDreams.map(
+    loadDreamList();
+    final Iterable<ListTile> tiles = _publicDreams.map(
       (Dream dream) {
         return new ListTile(
           title: new Text(
@@ -90,7 +80,30 @@ class PublicDreamsListState extends State<PublicDreamsList> {
       appBar: new AppBar(
         title: const Text('Public Dreams'),
       ),
-      body: new ListView(children: divided),
+      body: GestureDetector(
+        onVerticalDragUpdate: (DragUpdateDetails details) {
+          // setState(() {
+            
+            loadDreamList();
+          // });
+        },
+        child: Container(
+          ,
+          child: ListView(children: divided,)),
+      )
     );
+  }
+  loadDreamList() {
+    _publicDreams.clear();
+    this.snapshot.data.documents.forEach(
+      (DocumentSnapshot ds) {
+        _publicDreams.add(new Dream.withAll(
+          ds["name"],
+          ds["body"],
+          ds["created_at"],
+          ds["make_public"],
+          ds["rating"]
+        ));
+      });
   }
 }

@@ -87,14 +87,11 @@ class NewDreamFormState extends State<NewDreamForm> {
     if (this._formKey.currentState.validate()) {
       _formKey.currentState.save();
       _myDreams.add(_newDream);
-      
 
       final DocumentReference document = dreams.document();
-      // document.
       document.setData(
         _newDream.toJson()
       );
-      // firestore.collection('dreams').document(new UniqueKey().toString()).setData(_newDream.toJson());
       _newDream = new Dream();
     }
   }
@@ -193,13 +190,13 @@ class NewDreamFormState extends State<NewDreamForm> {
             width: double.infinity,
             child: RaisedButton(
               color: Colors.blue[400],
-              onPressed: () {
+              onPressed: () async {
                 Scaffold.of(context)
                         .showSnackBar(SnackBar
                           (content: Text('Processing')));
                 // Validate will return true if the form is valid, or false if
                 // the form is invalid.
-                this.submit();
+                await this.submit();
               },
               child: Text("Submit"),
             )
