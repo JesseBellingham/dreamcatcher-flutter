@@ -11,7 +11,7 @@ class MyDreams extends StatelessWidget {
       (Dream dream) {
         return new ListTile(
           title: new Text(
-            dream.dreamBody,
+            dream.body,
             style: _biggerFont,
           ),
         );

@@ -38,7 +38,7 @@ class NewDreamState extends State<NewDream> {
             (Dream dream) {
               return new ListTile(
                 title: new Text(
-                  dream.dreamName,
+                  dream.name,
                   style: _biggerFont,
                 ),
                 subtitle: new Text("Is public: ${dream.makePublic}"),
@@ -73,7 +73,7 @@ class NewDreamFormState extends State<NewDreamForm> {
   //
   // Note: This is a `GlobalKey<FormState>`, not a GlobalKey<MyCustomFormState>! 
   final _formKey = GlobalKey<FormState>();
-  var _newDream = new Dream();
+  var _newDream = new Dream.newDream();
   final Firestore firestore = Firestore.instance;
   CollectionReference get dreams =>  firestore.collection('dreams');
 
@@ -152,7 +152,7 @@ class NewDreamFormState extends State<NewDreamForm> {
             child: TextFormField(
               keyboardType: TextInputType.text,
               onSaved: (String value) {
-                this._newDream.dreamName = value;
+                this._newDream.name = value;
               },
               validator: (value) {
                 if (value.isEmpty) {
@@ -175,7 +175,7 @@ class NewDreamFormState extends State<NewDreamForm> {
                 }
               },
               onSaved: (String value) {
-                this._newDream.dreamBody = value;
+                this._newDream.body = value;
               },
             ),
           ),

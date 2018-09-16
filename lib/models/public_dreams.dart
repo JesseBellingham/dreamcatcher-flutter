@@ -60,13 +60,16 @@ class PublicDreamsListState extends State<PublicDreamsList> {
   @override
   Widget build(BuildContext context) {
     loadDreamList();
-    final Iterable<ListTile> tiles = _publicDreams.map(
+    final Iterable<Widget> tiles = _publicDreams.map(
       (Dream dream) {
-        return new ListTile(
-          title: new Text(
-            dream.dreamBody,
-            style: _biggerFont,
-          ),
+        return GestureDetector(
+          onTap: () => _goToDreamView(dream),
+          child: ListTile(
+            title: Text(
+              dream.body,
+              style: _biggerFont,
+            ),
+          )
         );
       }
     );
@@ -81,18 +84,47 @@ class PublicDreamsListState extends State<PublicDreamsList> {
         title: const Text('Public Dreams'),
       ),
       body: GestureDetector(
-        onVerticalDragUpdate: (DragUpdateDetails details) {
-          // setState(() {
-            
-            loadDreamList();
-          // });
+        onVerticalDragEnd: (DragEndDetails details) {
+          loadDreamList();
         },
         child: Container(
-          ,
           child: ListView(children: divided,)),
       )
     );
   }
+
+  void _goToDreamView(Dream dream) {
+    Navigator.of(context).push(
+      new MaterialPageRoute<void>(
+        builder: (BuildContext context) {
+          // final Iterable<ListTile> tiles = _myDreams.map(
+          //   (Dream dream) {
+          //     return new ListTile(
+          //       title: new Text(
+          //         dream.dreamName,
+          //         style: _biggerFont,
+          //       ),
+          //       subtitle: new Text("Is public: ${dream.makePublic}"),
+          //     );
+          //   }
+          // );
+          // final List<Widget> divided = ListTile.divideTiles(
+          //   context: context,
+          //   tiles: tiles
+          // ).toList();
+
+          return new Scaffold(
+            appBar: new AppBar(
+              title: const Text('My Dreams'),
+            ),
+            body: new Text(dream.body),
+            // body: new ListView(children: divided),
+          );
+        }
+      )
+    );
+  }
+
   loadDreamList() {
     _publicDreams.clear();
     this.snapshot.data.documents.forEach(
@@ -104,6 +136,7 @@ class PublicDreamsListState extends State<PublicDreamsList> {
           ds["make_public"],
           ds["rating"]
         ));
-      });
+      }
+    );
   }
 }
