@@ -1,6 +1,7 @@
 import 'package:uuid/uuid.dart';
 class Dream {
   String id;
+  String authorId;
   String name;
   String body;
   DateTime createdAt = DateTime.now();
@@ -14,9 +15,10 @@ class Dream {
     this.makePublic,
     this.rating);
 
-  Dream.newDream()
+  Dream.newDream(String authorId)
   {
     this.id = new Uuid().v4();
+    this.authorId = authorId;
   }
   Dream.withBody(this.body);
 
@@ -26,7 +28,8 @@ class Dream {
       "name": this.name,
       "created_at": this.createdAt,
       "rating": this.rating,
-      "make_public": this.makePublic
+      "make_public": this.makePublic,
+      "author_id": this.authorId
     };
   }
 }

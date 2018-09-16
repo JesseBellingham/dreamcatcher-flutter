@@ -2,11 +2,14 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dreamcatcher/models/dream.dart';
+import 'package:dreamcatcher/models/facebook_user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:dreamcatcher/services/facebook_service.dart';
 
 final _myDreams = <Dream>[];
 final _biggerFont = const TextStyle(fontSize: 18.0);
+final _facebookService = FacebookService();
 
 class NewDream extends StatefulWidget {
   @override
@@ -68,12 +71,21 @@ class NewDreamForm extends StatefulWidget {
 }
 
 class NewDreamFormState extends State<NewDreamForm> {
+  FacebookUser facebookUser;
+  @override
+  initState() {
+    super.initState();
+    _facebookService.getFacebookUser().then((FacebookUser user) {
+      facebookUser = user;
+      _newDream.authorId = user.id;
+    });
+  }
   // Create a global key that will uniquely identify the Form widget and allow
   // us to validate the form
   //
   // Note: This is a `GlobalKey<FormState>`, not a GlobalKey<MyCustomFormState>! 
   final _formKey = GlobalKey<FormState>();
-  var _newDream = new Dream.newDream();
+  var _newDream = Dream();
   final Firestore firestore = Firestore.instance;
   CollectionReference get dreams =>  firestore.collection('dreams');
 
