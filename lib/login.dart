@@ -6,14 +6,19 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class LoginPage extends StatefulWidget {
+  LoginPage({
+    Key key,
+    this.changeLoginStatus
+  }) : super(key: key);
+
   @override
   _LoginPageState createState() => _LoginPageState();
+  final ValueChanged<void> changeLoginStatus;
 }
 
 class _LoginPageState extends State<LoginPage> {
-  bool isLoggedIn = false;
+  bool isLoggedIn;
   var profileData;
-
   var facebookLogin = FacebookLogin();
 
   void onLoginStatusChanged(bool isLoggedIn, {profileData}) {
@@ -21,6 +26,7 @@ class _LoginPageState extends State<LoginPage> {
       this.isLoggedIn = isLoggedIn;
       this.profileData = profileData;
     });
+    widget.changeLoginStatus(isLoggedIn);
   }
 
   @override
