@@ -23,7 +23,7 @@ class NewDreamState extends State<NewDream> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dream Catcher'),
+        title: Text('New Dream'),
         actions: <Widget>[
           new IconButton(
             icon: const Icon(Icons.list),

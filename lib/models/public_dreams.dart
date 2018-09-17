@@ -1,15 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dreamcatcher/models/drawer_item.dart';
 import 'package:dreamcatcher/models/dream.dart';
-import 'package:dreamcatcher/services/facebook_service.dart';
+import 'package:dreamcatcher/services/dream_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
 final _biggerFont = const TextStyle(fontSize: 18.0);
-final _publicDreams = List<Dream>();
+var _publicDreams = List<Dream>();
 final _facebookService = FacebookLogin();
+final _dreamService = DreamService();
 
 
 class PublicDreams extends StatefulWidget {
@@ -30,7 +31,7 @@ class PublicDreamsState extends State<PublicDreams> {
   final drawerItems = List<Item>();
   
   _logOut() async {
-    await _facebookService.logOut();//.then(() => onLoginStatusChanged(false));
+    await _facebookService.logOut();
     onLoginStatusChanged(false);
   }
 
@@ -89,7 +90,7 @@ class PublicDreamsState extends State<PublicDreams> {
               ),
             ),
           
-        title: Text('Dream Catcher'),
+        title: Text('Public Dreams'),
         actions: <Widget>[
           new IconButton(
             icon: const Icon(Icons.add),
@@ -162,9 +163,6 @@ class PublicDreamsListState extends State<PublicDreamsList> {
     ).toList();
 
     return new Scaffold(
-      appBar: new AppBar(
-        title: const Text('Public Dreams'),
-      ),
       body: GestureDetector(
         onVerticalDragEnd: (DragEndDetails details) {
           loadDreamList();
@@ -179,28 +177,12 @@ class PublicDreamsListState extends State<PublicDreamsList> {
     Navigator.of(context).push(
       new MaterialPageRoute<void>(
         builder: (BuildContext context) {
-          // final Iterable<ListTile> tiles = _myDreams.map(
-          //   (Dream dream) {
-          //     return new ListTile(
-          //       title: new Text(
-          //         dream.dreamName,
-          //         style: _biggerFont,
-          //       ),
-          //       subtitle: new Text("Is public: ${dream.makePublic}"),
-          //     );
-          //   }
-          // );
-          // final List<Widget> divided = ListTile.divideTiles(
-          //   context: context,
-          //   tiles: tiles
-          // ).toList();
 
           return new Scaffold(
             appBar: new AppBar(
               title: const Text('My Dreams'),
             ),
-            body: new Text(dream.body),
-            // body: new ListView(children: divided),
+            body: Container(child:Text(dream.body)),
           );
         }
       )
@@ -209,16 +191,6 @@ class PublicDreamsListState extends State<PublicDreamsList> {
 
   loadDreamList() {
     _publicDreams.clear();
-    this.snapshot.data.documents.forEach(
-      (DocumentSnapshot ds) {
-        _publicDreams.add(new Dream.withAll(
-          ds["name"],
-          ds["body"],
-          ds["created_at"],
-          ds["make_public"],
-          ds["rating"]
-        ));
-      }
-    );
+    _publicDreams = _dreamService.getPublicDreams();
   }
 }
