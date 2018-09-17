@@ -5,6 +5,7 @@ dependencies:
   flutter:
     sdk: flutter
   cloud_firestore: ^0.7.3
+  firebase_auth: any
   uuid: any
   flutter_facebook_login: any
 

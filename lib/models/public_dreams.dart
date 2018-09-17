@@ -1,21 +1,90 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dreamcatcher/models/drawer_item.dart';
 import 'package:dreamcatcher/models/dream.dart';
+import 'package:dreamcatcher/services/facebook_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 final _biggerFont = const TextStyle(fontSize: 18.0);
 final _publicDreams = List<Dream>();
+final _facebookService = FacebookService();
+
 
 class PublicDreams extends StatefulWidget {
+  PublicDreams({
+    Key key,
+    this.changeLoginStatus}) : super(key: key);
+
   @override
   PublicDreamsState createState() => new PublicDreamsState();
+  final ValueChanged<void> changeLoginStatus;
 }
 
 class PublicDreamsState extends State<PublicDreams> {
+  
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _loading;
+  FirebaseUser user;
+  final drawerItems = List<Item>();
+  
+  _logOut() {
+    return _facebookService.logOut().then(() => onLoginStatusChanged(false));
+  }
+
+  onLoginStatusChanged(isLoggedIn) {
+    widget.changeLoginStatus(isLoggedIn);
+  }
+
+  @override
+  initState() {
+    super.initState();
+    drawerItems.add(Item("Log Out", Icons.exit_to_app, _logOut));
+    _loading = true;
+    FirebaseAuth.instance.currentUser().then((fbUser) {
+      setState(() {
+        user = fbUser;
+        _loading = false;
+      });
+    });
+  }
   @override
   Widget build(BuildContext context) {
+    var drawerOptions = <Widget>[];
+    for (var i = 0; i < drawerItems.length; i++) {
+      var d = drawerItems[i];
+      drawerOptions.add(
+        new ListTile(
+          leading: new Icon(d.icon),
+          title: new Text(d.title),
+          onTap: () => d.onClick,
+        )
+      );
+    }
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
+        leading:
+          GestureDetector(
+            onTap: () => _scaffoldKey.currentState.openDrawer(),
+            child:
+              Container(
+                // height: 10.0,
+                // width: 10.0,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: _loading
+                      ? null
+                      :  DecorationImage(
+                    fit: BoxFit.fill,
+                    image: NetworkImage(
+                        user.photoUrl
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          
         title: Text('Dream Catcher'),
         actions: <Widget>[
           new IconButton(
@@ -23,6 +92,16 @@ class PublicDreamsState extends State<PublicDreams> {
             onPressed: _goToNewDream
           ),
         ],
+      ),
+      drawer: Drawer(
+        child: Column(
+          children: <Widget>[
+            UserAccountsDrawerHeader(
+              accountName: Text(user.displayName),
+              accountEmail: Text(user.email),),
+              Column(children: drawerOptions,)
+          ]
+        ),
       ),
       body: new StreamBuilder(
         stream: Firestore.instance.collection('dreams').where("make_public", isEqualTo: true).snapshots(),
@@ -32,7 +111,6 @@ class PublicDreamsState extends State<PublicDreams> {
         }
       )
     );
-      // PublicDreamsList());
   }
 
   void _goToNewDream() {

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dreamcatcher/models/dream.dart';
 import 'package:dreamcatcher/models/facebook_user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dreamcatcher/services/facebook_service.dart';
@@ -75,9 +76,8 @@ class NewDreamFormState extends State<NewDreamForm> {
   @override
   initState() {
     super.initState();
-    _facebookService.getFacebookUser().then((FacebookUser user) {
-      facebookUser = user;
-      _newDream.authorId = user.id;
+    FirebaseAuth.instance.currentUser().then((user) {
+      _newDream.authorId = user.uid;
     });
   }
   // Create a global key that will uniquely identify the Form widget and allow

@@ -20,6 +20,17 @@ class FacebookService {
   }
 
   FacebookUser map(dynamic userData) {
-    return FacebookUser.withAll(userData["id"], userData["name"], userData["first_name"], userData["last_name"], userData["picture"]);
+    return FacebookUser.withAll(
+      userData["id"],
+      userData["name"],
+      userData["first_name"],
+      userData["last_name"],
+      userData["picture"]);
+  }
+
+  
+  logOut() async {
+    await _facebookLogin.logOut();
+    // onLoginStatusChanged(false);
   }
 }

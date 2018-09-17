@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -33,26 +34,32 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
+  initState() {
+    super.initState();
+    this.isLoggedIn = false;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: Text("Facebook Login"),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.exit_to_app,
-                color: Colors.white,
-              ),
-              onPressed: () => facebookLogin.isLoggedIn
-                  .then((isLoggedIn) => isLoggedIn ? _logout() : {}),
-            ),
-          ],
+          // actions: <Widget>[
+          //   IconButton(
+          //     icon: Icon(
+          //       Icons.exit_to_app,
+          //       color: Colors.white,
+          //     ),
+          //     onPressed: () => facebookLogin.isLoggedIn
+          //         .then((isLoggedIn) => isLoggedIn ? _logout() : {}),
+          //   ),
+          // ],
         ),
         body: Container(
           child: Center(
             child: isLoggedIn
-                ? _displayUserData(profileData)
+                ? Navigator.of(context).pushNamed('/')//_displayUserData(profileData)
                 : _displayLoginButton(),
           ),
         ),
@@ -72,6 +79,7 @@ class _LoginPageState extends State<LoginPage> {
         onLoginStatusChanged(false);
         break;
       case FacebookLoginStatus.loggedIn:
+        FirebaseAuth.instance.signInWithFacebook(accessToken: facebookLoginResult.accessToken.token);
         var graphResponse = await http.get(
             'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email,picture.height(200)&access_token=${facebookLoginResult
                 .accessToken.token}');
@@ -119,9 +127,9 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  _logout() async {
-    await facebookLogin.logOut();
-    onLoginStatusChanged(false);
-    print("Logged out");
-  }
+  // _logout() async {
+  //   await facebookLogin.logOut();
+  //   onLoginStatusChanged(false);
+  //   print("Logged out");
+  // }
 }

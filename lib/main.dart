@@ -22,6 +22,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    isLoggedIn = false;
     dynamic user;
     facebookLogin.isLoggedIn.then((val) async {
       if (val) {
@@ -45,7 +46,7 @@ class _MyAppState extends State<MyApp> {
       routes: {
         '/': (context) =>
           isLoggedIn ?
-            PublicDreams() :
+            PublicDreams(changeLoginStatus: _changeLoginStatus) :
             LoginPage(
               changeLoginStatus: _changeLoginStatus,
               fbUser: _fbUser),
