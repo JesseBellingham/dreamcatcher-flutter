@@ -54,10 +54,12 @@ class PublicDreamsState extends State<PublicDreams> {
     for (var i = 0; i < drawerItems.length; i++) {
       var d = drawerItems[i];
       drawerOptions.add(
-        new ListTile(
-          leading: new Icon(d.icon),
-          title: new Text(d.title),
-          onTap: () => d.onClick,
+        GestureDetector(
+          onTap: d.onClick,
+          child: ListTile(
+            leading: new Icon(d.icon),
+            title: new Text(d.title),
+          )
         )
       );
     }
