@@ -5,10 +5,11 @@ import 'package:dreamcatcher/services/facebook_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
 final _biggerFont = const TextStyle(fontSize: 18.0);
 final _publicDreams = List<Dream>();
-final _facebookService = FacebookService();
+final _facebookService = FacebookLogin();
 
 
 class PublicDreams extends StatefulWidget {
@@ -28,8 +29,9 @@ class PublicDreamsState extends State<PublicDreams> {
   FirebaseUser user;
   final drawerItems = List<Item>();
   
-  _logOut() {
-    return _facebookService.logOut().then(() => onLoginStatusChanged(false));
+  _logOut() async {
+    await _facebookService.logOut();//.then(() => onLoginStatusChanged(false));
+    onLoginStatusChanged(false);
   }
 
   onLoginStatusChanged(isLoggedIn) {
